@@ -43,7 +43,7 @@ active_list = []
 queue = []
 
 # Define the download limit for free users
-FREE_USER_DOWNLOAD_LIMIT = 4
+FREE_USER_DOWNLOAD_LIMIT = 2
 
 def can_download_video(user_id, is_premium=False):
     cooldown_duration = 30 * 60  # 30 minutes in seconds
@@ -244,7 +244,7 @@ async def tiktok_downloader(_, message):
         await ran.delete()
         os.remove(send_video_path)
     else:
-        url2 = "https://api.sdbots.tk/tiktok?url="+link
+        url2 = "https://api.sdbots.tech/tiktok?url="+link
         rea = requests.get(url2)
         p_res = rea.json()
         pk = p_res['result']
@@ -292,6 +292,17 @@ async def insta_downloader(_, message):
     soup = BeautifulSoup(r, 'html.parser')
     a_element = soup.find('source')
     video = a_element.get('src')
+    if video == "":
+        url = "https://www.w3toys.com/app/core/ajax.php"
+        data = {"url": link,
+	            "host": "instagram"}
+        response = requests.post(url, data=data)
+        r = response.content
+        soup = BeautifulSoup(r, 'html.parser')
+        a_element = soup.find('a')
+        video1 = a_element.get('href')
+        video = "https://www.w3toys.com/app/"+video1
+
     await ran.edit_text("<code>Downloading Video.....</code>")
     req = requests.get(video)
     send_video_path = "insta.mp4"
@@ -695,6 +706,16 @@ async def download_anyvideo(client, message):
             break
         else:
             continue
+
+    for file in os.listdir('.'):
+        if file.endswith(".mkv"):
+            await msg.edit_text("<code>Uploading Video.....\n\nsometimes this take some time🙂 Upload speed depend on video size</code>")
+            await app.send_chat_action(message.chat.id, enums.ChatAction.UPLOAD_VIDEO)
+            await message.reply_video(f"{file}", caption=f"**Here Is your Requested Video👆**\n\n<code>{file_name}</code>\n\n🔗 Requestor : ||{message.from_user.mention}||\n🚀 Downloaded via: [All Save Bot ☘️](https://t.me/AIl_Save_Bot)", reply_markup=InlineKeyboardMarkup(SHARE_BUTTON))
+            os.remove(f"{file}")
+            break
+        else:
+            continue        
 
     await msg.delete()
 
