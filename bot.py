@@ -36,19 +36,19 @@ mongo_client = MongoClient(cfg.MONGO_URI)
 db = mongo_client[MONGO_DB_NAME]
 subscriptions_collection = db[MONGO_COLLECTION_NAME]
 
-# Store the last download time and premium status for each user
+
 user_data = {}
 
 active_list = []
 queue = []
 
-# Define the download limit for free users
+
 FREE_USER_DOWNLOAD_LIMIT = 2
 
 def can_download_video(user_id, is_premium=False):
     cooldown_duration = 30 * 60  # 30 minutes in seconds
 
-    # Check if the user is a free user and has exceeded the download limit
+    # Check is a free user exceeded the download limit
     if not is_premium and user_id in user_data:
         last_download_time, download_count = user_data[user_id]
 
